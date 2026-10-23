@@ -1,0 +1,78 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety catch-all
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    // Users collection
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn() && (request.auth.uid == userId || incoming().uid == request.auth.uid);
+      allow delete: if isOwner(userId);
+    }
+
+    // Teams collection
+    match /teams/{teamId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(teamId);
+      allow update, delete: if isSignedIn();
+    }
+
+    // Channels collection
+    match /channels/{channelId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(channelId);
+      allow update, delete: if isSignedIn();
+    }
+
+    // Messages collection
+    match /messages/{messageId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(messageId);
+      allow update: if isSignedIn();
+      allow delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || resource.data.senderId == 'bot');
+    }
+
+    // Automations collection
+    match /automations/{automationId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && isValidId(automationId);
+    }
+
+    // Automation Logs collection
+    match /automation_logs/{logId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(logId);
+      allow update, delete: if false; // Append-only audit log
+    }
+
+    // Meetings collection
+    match /meetings/{meetingId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSignedIn() && isValidId(meetingId);
+    }
+  }
+}

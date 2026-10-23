@@ -1,0 +1,163 @@
+{
+  "entities": {
+    "users": {
+      "title": "User",
+      "description": "User profile in Microsoft Teams workspace",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "avatar": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "member", "guest", "bot"] },
+        "title": { "type": "string" },
+        "department": { "type": "string" },
+        "status": { "type": "string", "enum": ["available", "busy", "dnd", "away", "offline"] },
+        "statusMessage": { "type": "string" },
+        "color": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["uid", "name", "email"]
+    },
+    "teams": {
+      "title": "Team",
+      "description": "Enterprise collaboration team",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" },
+        "description": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "code", "createdBy"]
+    },
+    "channels": {
+      "title": "Channel",
+      "description": "Collaboration channel within a team",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "teamId": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "isPrivate": { "type": "boolean" },
+        "category": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["teamId", "name", "createdBy"]
+    },
+    "messages": {
+      "title": "Message",
+      "description": "Channel post or chat message",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "channelId": { "type": "string" },
+        "chatId": { "type": "string" },
+        "senderId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderAvatar": { "type": "string" },
+        "senderColor": { "type": "string" },
+        "senderRole": { "type": "string" },
+        "content": { "type": "string" },
+        "subject": { "type": "string" },
+        "isImportant": { "type": "boolean" },
+        "isAutomated": { "type": "boolean" },
+        "botSource": { "type": "string" },
+        "reactions": { "type": "array" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["senderId", "senderName", "content", "createdAt"]
+    },
+    "automations": {
+      "title": "AutomationWorkflow",
+      "description": "Power Automate workflow bot definition",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "description": { "type": "string" },
+        "icon": { "type": "string" },
+        "isEnabled": { "type": "boolean" },
+        "triggerType": { "type": "string" },
+        "triggerConfig": { "type": "object" },
+        "actionType": { "type": "string" },
+        "actionConfig": { "type": "object" },
+        "totalRuns": { "type": "number" },
+        "lastTriggered": { "type": "string" },
+        "createdBy": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["name", "triggerType", "actionType", "isEnabled"]
+    },
+    "automation_logs": {
+      "title": "AutomationLog",
+      "description": "Audit execution logs for workflow runs",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "workflowId": { "type": "string" },
+        "triggerEvent": { "type": "string" },
+        "actionExecuted": { "type": "string" },
+        "status": { "type": "string", "enum": ["success", "warning", "failed"] },
+        "channelName": { "type": "string" },
+        "details": { "type": "string" },
+        "timestamp": { "type": "string" }
+      },
+      "required": ["triggerEvent", "actionExecuted", "status", "timestamp"]
+    },
+    "meetings": {
+      "title": "Meeting",
+      "description": "Scheduled or live meeting sync",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "startTime": { "type": "string" },
+        "endTime": { "type": "string" },
+        "durationMinutes": { "type": "number" },
+        "organizerId": { "type": "string" },
+        "organizerName": { "type": "string" },
+        "isLive": { "type": "boolean" },
+        "meshRoomId": { "type": "string" },
+        "channelName": { "type": "string" },
+        "agenda": { "type": "string" },
+        "createdAt": { "type": "string" }
+      },
+      "required": ["title", "startTime", "durationMinutes", "organizerId", "organizerName"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/users" },
+      "description": "User profiles"
+    },
+    "/teams/{teamId}": {
+      "schema": { "$ref": "#/entities/teams" },
+      "description": "Teams"
+    },
+    "/channels/{channelId}": {
+      "schema": { "$ref": "#/entities/channels" },
+      "description": "Team channels"
+    },
+    "/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/messages" },
+      "description": "Channel & chat messages"
+    },
+    "/automations/{automationId}": {
+      "schema": { "$ref": "#/entities/automations" },
+      "description": "Power Automate rules"
+    },
+    "/automation_logs/{logId}": {
+      "schema": { "$ref": "#/entities/automation_logs" },
+      "description": "Workflow execution audit logs"
+    },
+    "/meetings/{meetingId}": {
+      "schema": { "$ref": "#/entities/meetings" },
+      "description": "Scheduled meetings"
+    }
+  }
+}

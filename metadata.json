@@ -1,0 +1,6 @@
+{
+  "name": "Microsoft Teams - AI Workspace & Mesh 3D",
+  "description": "Complete enterprise collaboration hub featuring channels, direct messaging, 3D Mesh immersive spaces, Power Automate workflow automation, AI Copilot recaps, and video meetings.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
